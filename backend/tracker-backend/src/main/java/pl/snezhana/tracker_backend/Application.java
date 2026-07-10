@@ -30,7 +30,12 @@ public class Application {
     private String offerLink;
 
     // Konstruktor bezargumentowy (wymagany przez JPA)
-    public Application() {}
+    public Application() {
+    this.applicationDate = LocalDate.now();
+    if (this.status == null) {
+        this.status = "wysłano";
+    }
+}
 
     // Gettery i settery
     public Long getId() { return id; }
