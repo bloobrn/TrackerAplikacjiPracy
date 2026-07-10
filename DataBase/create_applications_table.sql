@@ -18,6 +18,8 @@ CREATE TABLE applications (
         CHECK (status IN ('wysłano', 'odpowiedź', 'rozmowa', 'odrzucenie', 'oferta')),
     notes VARCHAR2(1000),
     offer_link VARCHAR2(300)
+    application_type VARCHAR2(30) DEFAULT NULL CHECK(application_type IN('intern', 'job'))
+
 );
 
 -- Komentarze do tabeli i kolumn
