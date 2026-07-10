@@ -17,7 +17,7 @@ CREATE TABLE applications (
     status VARCHAR2(30) DEFAULT 'wysłano' 
         CHECK (status IN ('wysłano', 'odpowiedź', 'rozmowa', 'odrzucenie', 'oferta')),
     notes VARCHAR2(1000),
-    offer_link VARCHAR2(300)
+    offer_link VARCHAR2(300),
     application_type VARCHAR2(30) DEFAULT NULL CHECK(application_type IN('intern', 'job'))
 
 );
@@ -31,6 +31,7 @@ COMMENT ON COLUMN applications.application_date IS 'Data złożenia aplikacji (d
 COMMENT ON COLUMN applications.status IS 'Status aplikacji: wysłano, odpowiedź, rozmowa, odrzucenie, oferta';
 COMMENT ON COLUMN applications.notes IS 'Dodatkowe notatki o aplikacji';
 COMMENT ON COLUMN applications.offer_link IS 'Link do oferty pracy';
+COMMENT ON COLUMN applications.application_type IS 'Typ aplikacji: staż (intern) lub praca (job)';
 
 -- Indeks dla szybszego wyszukiwania
 CREATE INDEX idx_applications_status ON applications(status);
