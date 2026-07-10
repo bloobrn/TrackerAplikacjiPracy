@@ -1,3 +1,4 @@
 Wallet_*/
 .DS_Store
 *.zip
+backend/tracker-backend/src/main/resources/application.properties
