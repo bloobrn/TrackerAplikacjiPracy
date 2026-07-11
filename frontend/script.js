@@ -1,0 +1,74 @@
+const API_URL = 'http://localhost:8080/api/applications';
+
+// Pobierz i wyświetl wszystkie aplikacje przy starcie strony
+document.addEventListener('DOMContentLoaded', loadApplications);
+
+async function loadApplications() {
+    try {
+        const response = await fetch(API_URL);
+        const applications = await response.json();
+        renderTable(applications);
+    } catch (error) {
+        console.error('Błąd pobierania danych:', error);
+        alert('Nie udało się połączyć z serwerem. Sprawdź, czy backend działa (mvn spring-boot:run).');
+    }
+}
+
+function renderTable(applications) {
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = '';
+
+    applications.forEach(app => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${app.company}</td>
+            <td>${app.position || '-'}</td>
+            <td><span class="status status-${app.status}">${app.status}</span></td>
+            <td>${app.applicationDate || '-'}</td>
+            <td><button class="delete-btn" onclick="deleteApplication(${app.id})">Usuń</button></td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// Obsługa formularza dodawania nowej aplikacji
+document.getElementById('applicationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const newApplication = {
+        company: document.getElementById('company').value,
+        position: document.getElementById('position').value,
+        status: document.getElementById('status').value,
+        notes: document.getElementById('notes').value,
+        offerLink: document.getElementById('offerLink').value
+    };
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newApplication)
+        });
+
+        if (!response.ok) throw new Error('Błąd zapisu');
+
+        document.getElementById('applicationForm').reset();
+        loadApplications(); // odśwież tabelę
+    } catch (error) {
+        console.error('Błąd dodawania aplikacji:', error);
+        alert('Nie udało się dodać aplikacji.');
+    }
+});
+
+// Usuwanie aplikacji
+async function deleteApplication(id) {
+    if (!confirm('Na pewno usunąć tę aplikację?')) return;
+
+    try {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        loadApplications(); // odśwież tabelę
+    } catch (error) {
+        console.error('Błąd usuwania:', error);
+        alert('Nie udało się usunąć aplikacji.');
+    }
+}
