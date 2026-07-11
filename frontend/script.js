@@ -25,7 +25,6 @@ function renderTable(applications) {
             <td>${app.position || '-'}</td>
             <td>${app.applicationType === 'intern' ? 'Staż' : app.applicationType === 'job' ? 'Praca' : '-'}</td>
             <td><span class="status status-${app.status}">${app.status}</span></td>
-            <td><span class="status status-${app.status}">${app.status}</span></td>
             <td>${app.applicationDate || '-'}</td>
             <td><button class="delete-btn" onclick="deleteApplication(${app.id})">Usuń</button></td>
         `;
