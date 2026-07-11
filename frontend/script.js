@@ -23,6 +23,8 @@ function renderTable(applications) {
         row.innerHTML = `
             <td>${app.company}</td>
             <td>${app.position || '-'}</td>
+            <td>${app.applicationType === 'intern' ? 'Staż' : app.applicationType === 'job' ? 'Praca' : '-'}</td>
+            <td><span class="status status-${app.status}">${app.status}</span></td>
             <td><span class="status status-${app.status}">${app.status}</span></td>
             <td>${app.applicationDate || '-'}</td>
             <td><button class="delete-btn" onclick="deleteApplication(${app.id})">Usuń</button></td>
@@ -39,6 +41,7 @@ document.getElementById('applicationForm').addEventListener('submit', async (e) 
         company: document.getElementById('company').value,
         position: document.getElementById('position').value,
         status: document.getElementById('status').value,
+        applicationType: document.getElementById('applicationType').value,
         notes: document.getElementById('notes').value,
         offerLink: document.getElementById('offerLink').value
     };

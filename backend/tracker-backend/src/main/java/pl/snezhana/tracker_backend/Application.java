@@ -29,6 +29,9 @@ public class Application {
     @Column(name = "OFFER_LINK")
     private String offerLink;
 
+    @Column(name = "APPLICATION_TYPE")
+    private String applicationType;
+
     // Konstruktor bezargumentowy (wymagany przez JPA)
     public Application() {
     this.applicationDate = LocalDate.now();
@@ -58,4 +61,7 @@ public class Application {
 
     public String getOfferLink() { return offerLink; }
     public void setOfferLink(String offerLink) { this.offerLink = offerLink; }
+
+    public String getApplicationType() { return applicationType; }
+    public void setApplicationType(String applicationType) { this.applicationType = applicationType; }
 }
