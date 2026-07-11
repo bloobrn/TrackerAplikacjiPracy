@@ -1,0 +1,75 @@
+import oracledb
+import matplotlib.pyplot as plt
+from collections import Counter
+
+# --- Konfiguracja połączenia ---
+DB_USER = "ADMIN"
+DB_PASSWORD = "TWOJE_HASLO_ADMIN"
+DB_DSN = "rub3qg8rpdft4vhz_tp"
+WALLET_LOCATION = "/Users/snowik/Desktop/Oracle_wallet/Wallet_RUB3QG8RPDFT4VHZ-2"
+WALLET_PASSWORD = "TWOJE_HASLO_WALLETA"
+
+def get_connection():
+    return oracledb.connect(
+        user=DB_USER,
+        password=DB_PASSWORD,
+        dsn=DB_DSN,
+        config_dir=WALLET_LOCATION,
+        wallet_location=WALLET_LOCATION,
+        wallet_password=WALLET_PASSWORD
+    )
+
+def fetch_applications():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT company, status, application_type FROM applications")
+    rows = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return rows
+
+def print_statistics(rows):
+    total = len(rows)
+    statuses = Counter(row[1] for row in rows)
+
+    print(f"\n=== STATYSTYKI APLIKACJI ===")
+    print(f"Łączna liczba aplikacji: {total}\n")
+
+    print("Rozkład statusów:")
+    for status, count in statuses.items():
+        percent = (count / total) * 100
+        print(f"  {status}: {count} ({percent:.1f}%)")
+
+    responded = statuses.get('odpowiedź', 0) + statuses.get('rozmowa', 0) + statuses.get('oferta', 0)
+    response_rate = (responded / total) * 100 if total > 0 else 0
+    print(f"\nWskaźnik odpowiedzi (odpowiedź/rozmowa/oferta): {response_rate:.1f}%")
+
+    return statuses
+
+def plot_statuses(statuses):
+    labels = list(statuses.keys())
+    values = list(statuses.values())
+
+    colors = {
+        'wysłano': '#3498db',
+        'odpowiedź': '#9b59b6',
+        'rozmowa': '#f39c12',
+        'odrzucenie': '#e74c3c',
+        'oferta': '#27ae60'
+    }
+    bar_colors = [colors.get(label, '#95a5a6') for label in labels]
+
+    plt.figure(figsize=(8, 5))
+    plt.bar(labels, values, color=bar_colors)
+    plt.title('Liczba aplikacji według statusu')
+    plt.xlabel('Status')
+    plt.ylabel('Liczba aplikacji')
+    plt.tight_layout()
+    plt.savefig('statystyki_aplikacji.png')
+    print("\nWykres zapisany jako: statystyki_aplikacji.png")
+    plt.show()
+
+if __name__ == "__main__":
+    rows = fetch_applications()
+    statuses = print_statistics(rows)
+    plot_statuses(statuses)
