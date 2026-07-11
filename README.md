@@ -59,6 +59,6 @@ python3 analytics.py
 
 Snezhana Zorina - studenta informatyki Katolicki Uniwersytet Lubelski Jana Pawła II
 
-##P.S.
+## P.S.
 
 *pozniej dodam Dockerfile - ktokolwiek sklonuje repo, odpali caly projekt kilkoma komendami, bez recznej instalacji Javy, Mavena, Pythona itd.
