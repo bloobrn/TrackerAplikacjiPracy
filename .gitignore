@@ -2,3 +2,6 @@ Wallet_*/
 .DS_Store
 *.zip
 backend/tracker-backend/src/main/resources/application.properties
+python-analytics/venv/
+python-analytics/analytics.py
+python-analytics/__pycache__/
