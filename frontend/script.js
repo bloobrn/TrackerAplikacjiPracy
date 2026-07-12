@@ -24,7 +24,15 @@ function renderTable(applications) {
             <td>${app.company}</td>
             <td>${app.position || '-'}</td>
             <td>${app.applicationType === 'intern' ? 'Staż' : app.applicationType === 'job' ? 'Praca' : '-'}</td>
-            <td><span class="status status-${app.status}">${app.status}</span></td>
+            <td>
+   		 <select class="status-select status-${app.status}" onchange="updateStatus(${app.id}, this)">
+       			 <option value="wysłano" ${app.status === 'wysłano' ? 'selected' : ''}>wysłano</option>
+       			 <option value="odpowiedź" ${app.status === 'odpowiedź' ? 'selected' : ''}>odpowiedź</option>
+       			 <option value="rozmowa" ${app.status === 'rozmowa' ? 'selected' : ''}>rozmowa</option>
+       			 <option value="odrzucenie" ${app.status === 'odrzucenie' ? 'selected' : ''}>odrzucenie</option>
+      		 	 <option value="oferta" ${app.status === 'oferta' ? 'selected' : ''}>oferta</option>
+   		 </select>
+</td>
             <td>${app.applicationDate || '-'}</td>
             <td><button class="delete-btn" onclick="deleteApplication(${app.id})">Usuń</button></td>
         `;
@@ -72,5 +80,29 @@ async function deleteApplication(id) {
     } catch (error) {
         console.error('Błąd usuwania:', error);
         alert('Nie udało się usunąć aplikacji.');
+    }
+}
+
+// Aktualizacja statusu bezpośrednio z tabeli
+async function updateStatus(id, selectElement) {
+    const newStatus = selectElement.value;
+    selectElement.className = `status-select status-${newStatus}`;
+
+    try {
+        const getResponse = await fetch(`${API_URL}/${id}`);
+        const application = await getResponse.json();
+        application.status = newStatus;
+
+        const putResponse = await fetch(`${API_URL}/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(application)
+        });
+
+        if (!putResponse.ok) throw new Error('Błąd aktualizacji');
+    } catch (error) {
+        console.error('Błąd aktualizacji statusu:', error);
+        alert('Nie udało się zaktualizować statusu.');
+        loadApplications();
     }
 }

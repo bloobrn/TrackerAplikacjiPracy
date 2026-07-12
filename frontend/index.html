@@ -2,74 +2,258 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tracker Aplikacji o Pracę</title>
 <style>
-    body { font-family: Arial, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; background: #f5f5f5; }
-    h1 { color: #2c3e50; }
-    form { background: white; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    input, select, textarea { width: 100%; padding: 8px; margin: 5px 0 15px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    button { background: #3498db; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
-    button:hover { background: #2980b9; }
-    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-    th { background: #2c3e50; color: white; }
-    .status { padding: 4px 10px; border-radius: 12px; font-size: 0.85em; color: white; }
-    .status-wysłano { background: #3498db; }
-    .status-odpowiedź { background: #9b59b6; }
-    .status-rozmowa { background: #f39c12; }
-    .status-odrzucenie { background: #e74c3c; }
-    .status-oferta { background: #27ae60; }
-    .delete-btn { background: #e74c3c; padding: 5px 10px; font-size: 0.85em; }
+    :root {
+        --primary: #4f46e5;
+        --primary-hover: #4338ca;
+        --background: #f8fafc;
+        --card-bg: #ffffff;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        
+        /* Statusy - nowoczesne, stonowane kolory */
+        --status-wyslano: #3b82f6;
+        --status-odpowiedz: #a855f7;
+        --status-rozmowa: #f59e0b;
+        --status-odrzucenie: #ef4444;
+        --status-oferta: #10b981;
+    }
+
+    body { 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+        max-width: 1000px; 
+        margin: 0 auto; 
+        padding: 40px 20px; 
+        background: var(--background); 
+        color: var(--text-main);
+        line-height: 1.5;
+    }
+
+    h1 { 
+        font-size: 1.8rem; 
+        font-weight: 700; 
+        color: var(--text-main); 
+        margin-bottom: 24px;
+        letter-spacing: -0.02em;
+    }
+
+    form { 
+        background: var(--card-bg); 
+        padding: 28px; 
+        border-radius: 12px; 
+        margin-bottom: 32px; 
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); 
+    }
+
+    /* Układ pól w formularzu */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    label { 
+        font-size: 0.85rem; 
+        font-weight: 600; 
+        color: var(--text-muted); 
+        margin-bottom: 6px; 
+    }
+
+    input, select, textarea { 
+        width: 100%; 
+        padding: 10px 14px; 
+        box-sizing: border-box; 
+        border: 1px solid var(--border); 
+        border-radius: 8px; 
+        background: #fff;
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: var(--text-main);
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus { 
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    textarea { resize: vertical; }
+
+    button[type="submit"] { 
+        background: var(--primary); 
+        color: white; 
+        border: none; 
+        padding: 12px 24px; 
+        border-radius: 8px; 
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer; 
+        transition: background 0.2s;
+    }
+
+    button[type="submit"]:hover { 
+        background: var(--primary-hover); 
+    }
+
+    .table-container {
+        background: var(--card-bg);
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+    }
+
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        text-align: left;
+        font-size: 0.95rem;
+    }
+
+    th, td { padding: 14px 20px; border-bottom: 1px solid var(--border); }
+
+    th { 
+        background: #f8fafc; 
+        color: var(--text-muted); 
+        font-weight: 600; 
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #fdfdfd; }
+
+    /* Nowoczesne odznaki statusów */
+    .status { 
+        display: inline-block;
+        padding: 4px 10px; 
+        border-radius: 6px; 
+        font-size: 0.8rem; 
+        font-weight: 600; 
+        color: white; 
+    }
+    .status-wysłano { background: var(--status-wyslano); }
+    .status-odpowiedź { background: var(--status-odpowiedz); }
+    .status-rozmowa { background: var(--status-rozmowa); }
+    .status-odrzucenie { background: var(--status-odrzucenie); }
+    .status-oferta { background: var(--status-oferta); }
+    select.status-select {
+         display: inline-block;
+   	 padding: 4px 10px;
+   	 border-radius: 6px;
+   	 font-size: 0.8rem;
+   	 font-weight: 600;
+   	 color: white;
+   	 border: none;
+   	 cursor: pointer;
+   	 -webkit-appearance: none;
+   	 appearance: none;
+   	 text-align: center;
+   	 font-family: inherit;
+}
+    select.status-select:focus {
+   	 outline: none;
+   	 box-shadow: 0 0 0 2px rgba(0,0,0,0.15);
+}    
+
+    .delete-btn { 
+        background: #fff; 
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+        padding: 6px 12px; 
+        font-size: 0.85rem; 
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .delete-btn:hover { 
+        background: #ef4444; 
+        color: white;
+        border-color: #ef4444;
+    }
 </style>
 </head>
 <body>
 
-<h1>📋 Tracker Aplikacji o Pracę</h1>
+<h1>Tracker Aplikacji o Pracę</h1>
 
 <form id="applicationForm">
-    <label>Firma *</label>
-    <input type="text" id="company" required>
+    <div class="form-grid">
+        <div class="form-group">
+            <label>Firma *</label>
+            <input type="text" id="company" required>
+        </div>
 
-    <label>Stanowisko</label>
-    <input type="text" id="position">
+        <div class="form-group">
+            <label>Stanowisko</label>
+            <input type="text" id="position">
+        </div>
 
-    <label>Typ aplikacji</label>
-    <select id="applicationType">
-        <option value="intern">staż (intern)</option>
-        <option value="job">praca (job)</option>
-    </select>
+        <div class="form-group">
+            <label>Typ aplikacji</label>
+            <select id="applicationType">
+                <option value="intern">staż (intern)</option>
+                <option value="job">praca (job)</option>
+            </select>
+        </div>
 
-    <label>Status</label>
-    <select id="status">
-        <option value="wysłano">wysłano</option>
-        <option value="odpowiedź">odpowiedź</option>
-        <option value="rozmowa">rozmowa</option>
-        <option value="odrzucenie">odrzucenie</option>
-        <option value="oferta">oferta</option>
-    </select>
+        <div class="form-group">
+            <label>Status</label>
+            <select id="status">
+                <option value="wysłano">wysłano</option>
+                <option value="odpowiedź">odpowiedź</option>
+                <option value="rozmowa">rozmowa</option>
+                <option value="odrzucenie">odrzucenie</option>
+                <option value="oferta">oferta</option>
+            </select>
+        </div>
 
-    <label>Notatki</label>
-    <textarea id="notes" rows="3"></textarea>
+        <div class="form-group full-width">
+            <label>Notatki</label>
+            <textarea id="notes" rows="2"></textarea>
+        </div>
 
-    <label>Link do oferty</label>
-    <input type="text" id="offerLink">
+        <div class="form-group full-width">
+            <label>Link do oferty</label>
+            <input type="text" id="offerLink">
+        </div>
+    </div>
 
     <button type="submit">Dodaj aplikację</button>
 </form>
 
-<table id="applicationsTable">
-    <thead>
-        <tr>
-            <th>Firma</th>
-            <th>Stanowisko</th>
-            <th>Typ</th>
-            <th>Status</th>
-            <th>Data</th>
-            <th>Akcje</th>
-        </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-</table>
+<div class="table-container">
+    <table id="applicationsTable">
+        <thead>
+            <tr>
+                <th>Firma</th>
+                <th>Stanowisko</th>
+                <th>Typ</th>
+                <th>Status</th>
+                <th>Data</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
 
 <script src="script.js"></script>
 </body>
