@@ -1,4 +1,5 @@
 const API_URL = 'http://localhost:8080/api/applications';
+let currentApplications = [];
 
 // Pobierz i wyświetl wszystkie aplikacje przy starcie strony
 document.addEventListener('DOMContentLoaded', loadApplications);
@@ -7,7 +8,8 @@ async function loadApplications() {
     try {
         const response = await fetch(API_URL);
         const applications = await response.json();
-        renderTable(applications);
+	currentApplications = applications;
+	renderTable(applications);
     } catch (error) {
         console.error('Błąd pobierania danych:', error);
         alert('Nie udało się połączyć z serwerem. Sprawdź, czy backend działa (mvn spring-boot:run).');
@@ -34,7 +36,8 @@ function renderTable(applications) {
    		 </select>
 </td>
             <td>${app.applicationDate || '-'}</td>
-            <td><button class="delete-btn" onclick="deleteApplication(${app.id})">Usuń</button></td>
+            <td><button class="details-btn" onclick="showDetails(${app.id})">Zobacz</button></td>
+	    <td><button class="delete-btn" onclick="deleteApplication(${app.id})">Usuń</button></td>
         `;
         tableBody.appendChild(row);
     });
@@ -106,3 +109,27 @@ async function updateStatus(id, selectElement) {
         loadApplications();
     }
 }
+
+//wyswietlanie dodatkowych informacji: notatek oraz linku do oferty
+function showDetails(id) {
+    const app = currentApplications.find(a => a.id === id);
+    if (!app) return;
+
+    document.getElementById('modalCompany').textContent = app.company;
+    document.getElementById('modalPosition').textContent = app.position || 'Brak danych';
+    document.getElementById('modalNotes').textContent = app.notes || 'Brak notatek';
+
+    const offerLinkDiv = document.getElementById('modalOfferLink');
+    if (app.offerLink) {
+        offerLinkDiv.innerHTML = `<a href="${app.offerLink}" target="_blank" rel="noopener">${app.offerLink}</a>`;
+    } else {
+        offerLinkDiv.textContent = 'Brak linku';
+    }
+
+    document.getElementById('detailsModal').classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('detailsModal').classList.remove('active');
+}
+
